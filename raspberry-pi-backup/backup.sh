@@ -42,6 +42,12 @@ BACKUP_MOUNT="/mnt/backup"
 BACKUP_PATH="${BACKUP_MOUNT}/${BACKUP_SUBFOLDER}${BACKUP_HOSTNAME}"
 BACKUP_NAME="Backup_${BACKUP_HOSTNAME}"
 
+################### define block end from fdisk for big sata devices #################
+
+BLOCK_END=$(("$(fdisk -l | awk '/\/dev\/sda4/ {print $5}')" + 1))
+
+######################################################################################
+
 echo
 
 # create mount dir if not exists
@@ -94,7 +100,7 @@ if [[ -L "/bin/dd" ]] || [[ -f "/opt/victronenergy/version" ]]; then
     fi
     # create backup
     echo "Using script dd for backup."
-    "${SCRIPT_DIR}/ext/dd" if=$BACKUP_DEVICE of="${BACKUP_PATH}/${BACKUP_NAME}_$(date +%Y%m%d_%H%M%S).img" bs=1MB status=progress
+    "${SCRIPT_DIR}/ext/dd" if=$BACKUP_DEVICE of="${BACKUP_PATH}/${BACKUP_NAME}_$(date +%Y%m%d_%H%M%S).img" count=$BLOCK_END status=progress
 
 # if not use the system dd
 else
@@ -106,7 +112,7 @@ else
     fi
     # create backup
     echo "Using system dd for backup."
-    /bin/dd if=$BACKUP_DEVICE of="${BACKUP_PATH}/${BACKUP_NAME}_$(date +%Y%m%d_%H%M%S).img" bs=1MB status=progress
+    /bin/dd if=$BACKUP_DEVICE of="${BACKUP_PATH}/${BACKUP_NAME}_$(date +%Y%m%d_%H%M%S).img" count=$BLOCK_END status=progress
 fi
 
 if [ $? -eq 0 ]; then
