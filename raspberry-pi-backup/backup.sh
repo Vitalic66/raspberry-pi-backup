@@ -44,7 +44,7 @@ BACKUP_NAME="Backup_${BACKUP_HOSTNAME}"
 
 ################### define block end from fdisk for big sata devices #################
 
-BLOCK_END=$(("$(fdisk -l | awk '/\/dev\/sda4/ {print $5}')" + 1))
+BLOCK_END=$(("$(fdisk -l | awk '/\/dev\/sda4/ {print $3}')" + 1))
 
 ######################################################################################
 
